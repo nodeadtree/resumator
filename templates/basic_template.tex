@@ -1,0 +1,51 @@
+\documentclass{article}
+  \begin{document}
+
+  \section{Personal Information}
+  \begin{itemize}
+    \item \VAR{personal_info.first_name} \VAR{personal_info.last_name}
+    \item \VAR{personal_info.email}
+    \item \VAR{personal_info.website}
+    \item \VAR{personal_info.github}
+  \end{itemize}
+
+  \#{Education section}
+  \section{Education}
+  \begin{itemize}
+    \BLOCK{ for education in education_section }
+    \item \VAR{education['title']}, \VAR{education['school']} - \VAR{education['time']}
+    \BLOCK{ endfor }
+  \end{itemize}
+
+  \#{Experience section}
+  \subsection{Experience}
+  \BLOCK{ for item in experience }
+  \subsubsection{\VAR{item['title']} - \VAR{item['employer']} \VAR{item['start']} - \VAR{item['end']}}
+    \begin{itemize}
+    \BLOCK{ for bullet in item['bullets'] }
+      \item \VAR{bullet}
+    \BLOCK{ endfor }
+    \end{itemize}
+  \BLOCK{ endfor }
+
+  \#{Skills section}
+  \BLOCK{ for section in skills}
+  \subsection{\VAR{section}}
+  \begin{itemize}
+    \BLOCK{ for skill in skills[section] }
+      \item \VAR{skill}
+    \BLOCK{ endfor }
+  \end{itemize}
+  \BLOCK{ endfor }
+
+  \#{Projects section}
+  \subsection{Projects}
+  \BLOCK{ for project in projects}
+  \subsubsection{\VAR{project['name']}}
+    \begin{itemize}
+    \BLOCK{ for bullet in project['bullets'] }
+      \item \VAR{bullet}
+    \BLOCK{ endfor }
+    \end{itemize}
+  \BLOCK{ endfor }
+\end{document}
