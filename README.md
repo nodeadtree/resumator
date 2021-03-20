@@ -5,7 +5,7 @@ Extremely WIP resume generation script
 Rough roadmap
 ## V0 stuff.
 - [x] Get the template directory
-- [x] Make the resume json
+- [x] Make the resume json (it's not available here, sorry!)
 - [x] Start filling out the tex template
 - [x] Work on the CLI interface
 - [x] Refactor into relevant pieces
