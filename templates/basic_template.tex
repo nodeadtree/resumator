@@ -1,51 +1,99 @@
 \documentclass{article}
-  \begin{document}
+% Font stuff
+\usepackage[sfdefault]{ClearSans} %% option 'sfdefault' activates Clear Sans as the default text font
+\usepackage[T1]{fontenc}
 
-  \section{Personal Information}
-  \begin{itemize}
-    \item \VAR{personal_info.first_name} \VAR{personal_info.last_name}
-    \item \VAR{personal_info.email}
-    \item \VAR{personal_info.website}
-    \item \VAR{personal_info.github}
-  \end{itemize}
+% Spacing malarky
+\setlength{\parskip}{0em}
+\renewcommand{\baselinestretch}{0}
+\usepackage[margin=0.2in,top=0.5in]{geometry}
 
-  \#{Education section}
-  \section{Education}
-  \begin{itemize}
-    \BLOCK{ for education in education_section }
-    \item \VAR{education['title']}, \VAR{education['school']} - \VAR{education['time']}
-    \BLOCK{ endfor }
-  \end{itemize}
+% Extra packages
+\usepackage{enumitem}[topsep=0pt]
+\usepackage{scrextend}
+\usepackage{underscore}
 
-  \#{Experience section}
-  \subsection{Experience}
-  \BLOCK{ for item in experience }
-  \subsubsection{\VAR{item['title']} - \VAR{item['employer']} \VAR{item['start']} - \VAR{item['end']}}
+% Absolutely batshit underscore workaround
+\newcommand{\TextUnderscore}{\rule{.4em}{.1em}}
+
+\begin{document}
+    \large \textbf{\VAR{personal_info.first_name} \VAR{personal_info.last_name}}
+
+    \vspace{.2em}
+    \normalsize \VAR{personal_info.email}
+
+    \VAR{personal_info.website}
+
+    \VAR{personal_info.github}
+
+\vspace{2em}
+\begin{minipage}[t]{.7\textwidth}
+
+    \#{Education section}
+    \large \textbf{Education}
+    \normalsize
+
     \begin{itemize}
-    \BLOCK{ for bullet in item['bullets'] }
-      \item \VAR{bullet}
-    \BLOCK{ endfor }
+      \BLOCK{ for education in education_section }
+      \item \textbf{\VAR{education['title']}, \VAR{education['school']}} - \VAR{education['time']}
+      \BLOCK{ endfor }
     \end{itemize}
-  \BLOCK{ endfor }
+    \vspace{1em}
 
+    \#{Experience section}
+    \large \textbf{Experience}
+    \vspace{.5em}
+
+    \begin{addmargin}[1em]{0em}
+      \BLOCK{ for item in experience }
+      \normalsize \textbf{\VAR{item['title']}}
+      \small - \VAR{item['employer']} \VAR{item['start']} - \VAR{item['end']}
+      \begin{itemize}
+      \BLOCK{ for bullet in item['bullets'] }
+        \item \VAR{bullet}
+      \BLOCK{ endfor }
+      \end{itemize}
+      \BLOCK{ endfor }
+    \end{addmargin}
+    \vspace{1em}
+    \#{Projects section}
+    \large \textbf{Projects}
+    \vspace{.5em}
+
+    \begin{addmargin}[1em]{0em}
+      \BLOCK{ for project in projects}
+      \normalsize
+      {\bf \VAR{project['name']}}
+      \small
+        \begin{itemize}
+        \BLOCK{ for bullet in project['bullets'] }
+          \item \VAR{bullet}
+        \BLOCK{ endfor }
+        \end{itemize}
+      \BLOCK{ endfor }
+    \end{addmargin}
+  \end{minipage}
   \#{Skills section}
-  \BLOCK{ for section in skills}
-  \subsection{\VAR{section}}
-  \begin{itemize}
-    \BLOCK{ for skill in skills[section] }
-      \item \VAR{skill}
-    \BLOCK{ endfor }
-  \end{itemize}
-  \BLOCK{ endfor }
+  \begin{minipage}[t]{0.2\textwidth}
+    \begin{tabular}[t]{p{\textwidth}}
+        \BLOCK{ for section in skills}
+        \normalsize \textbf{\VAR{section}}
 
-  \#{Projects section}
-  \subsection{Projects}
-  \BLOCK{ for project in projects}
-  \subsubsection{\VAR{project['name']}}
-    \begin{itemize}
-    \BLOCK{ for bullet in project['bullets'] }
-      \item \VAR{bullet}
-    \BLOCK{ endfor }
-    \end{itemize}
-  \BLOCK{ endfor }
+        \small
+        \begin{itemize}[align=parleft,left=0pt..1em]
+          \BLOCK{ for skill in skills[section] }
+          \item \VAR{skill["name"]} -
+          \BLOCK{ if skill["years"] > 1}
+          \VAR{skill["years"]} years
+          \BLOCK{ else }
+          \VAR{skill["years"]} year
+          \BLOCK{endif}
+          \BLOCK{if "subtitle" in skill}
+          {\newline\footnotesize \itshape \VAR{skill["subtitle"]}}
+          \BLOCK{endif}
+          \BLOCK{ endfor }
+        \end{itemize}
+        \BLOCK{ endfor }
+    \end{tabular}
+  \end{minipage}
 \end{document}
