@@ -47,7 +47,7 @@
     \begin{addmargin}[1em]{0em}
       \BLOCK{ for item in experience }
       \normalsize \textbf{\VAR{item['title']}}
-      \small - \VAR{item['employer']} \VAR{item['start']} - \VAR{item['end']}
+      \small - \VAR{item['employer']}, \VAR{item['start']} - \VAR{item['end']}
       \begin{itemize}
       \BLOCK{ for bullet in item['bullets'] }
         \item \VAR{bullet}
@@ -88,11 +88,18 @@
           \BLOCK{ else }
           \VAR{skill["years"]} year
           \BLOCK{endif}
-          \BLOCK{if "subtitle" in skill}
-          {\newline\footnotesize \itshape \VAR{skill["subtitle"]}}
+          \BLOCK{if "location" in skill}
+          \vspace{.1em}
+          {\newline\footnotesize\bfseries \itshape \VAR{skill["location"]}}
+          \BLOCK{endif}
+          \BLOCK{if section == "Pedagogy"}
+          \vspace{.1em}
+          {\newline\footnotesize \itshape \VAR{skill["description"]}}
+          \vspace{.4em}
           \BLOCK{endif}
           \BLOCK{ endfor }
         \end{itemize}
+        \vspace{1.0em}
         \BLOCK{ endfor }
     \end{tabular}
   \end{minipage}
