@@ -17,11 +17,33 @@ from jinja2 import Template
 # [ ] Add checks for sections and formatting
 # [ ] Add documentation for the json requirements
 # [ ] Handle conditional rendering of sections in basic template
-# [ ] Add CLI options for filtering sections
+# [ ] Add CLI options for filtering sections - probably going to have to do
+# some somewhat serious changes to make this more ergonomic. I'm guessing that
+# I did something weird to quickly generate a resume for when I applied to Juni
 
 # V0.2 stuff
 # [ ] Refactor __main__.py into separate sections and add some testing
 # [ ] Refactor template into subfiles
+
+
+# PROBABLY DEPRECATED - My guess is that these are temporarily dead code as a
+# consequence of trying to generate a resume quickly for Juni
+def prepare_skill(skill):
+    name = skill['name']
+    years = skill['years']
+    skill_string = f'{name} - {years} year'
+    if skill['years'] > 1:
+        skill_string += 's'
+    if "location" in skill:
+        location = skill["location"]
+        skill_string += '\n\n{\\textit{'+location+'}}'
+    return skill_string
+
+
+# PROBABLY DEPRECATED - My guess is that these are temporarily dead code as a
+# consequence of trying to generate a resume quickly for Juni
+def prepare_skill_section(raw_skills):
+    return {section: [prepare_skill(i) for i in raw_skills[section]] for section in raw_skills}
 
 
 def filter_text(text):
@@ -37,22 +59,23 @@ def filter_text(text):
     return "".join(map(substitutor, text))
 
 
-def filter_value(value):
+def select_value(value):
     # Oy vey
     if isinstance(value, dict):
-        return filter_json(value)
+        return format_json(value)
     elif isinstance(value, list):
-        return list(map(filter_value, value))
+        return list(map(select_value, value))
     elif isinstance(value, str):
         return filter_text(value)
     else:
         return value
 
 
-def filter_json(json):
+def format_json(json):
     filtered_json = dict()
     for i in json:
-        filtered_json[i] = filter_value(json[i])
+        filtered_json[i] = select_value(json[i])
+    print(filtered_json)
     return filtered_json
 
 
@@ -61,30 +84,18 @@ def parse_json(path):
         return json.load(raw_json)
 
 
-def prepare_skill(skill):
-    name = skill['name']
-    years = skill['years']
-    skill_string = f'{name} - {years} year'
-    if skill['years'] > 1:
-        skill_string += 's'
-    if "location" in skill:
-        location = skill["location"]
-        skill_string += '\n\n{\\textit{'+location+'}}'
-    return skill_string
-
-
-def prepare_skill_section(raw_skills):
-    return {section: [prepare_skill(i) for i in raw_skills[section]] for section in raw_skills}
-
-
 def fill_template(experience_json, template):
     filled_template = template.render(
         personal_info=experience_json['personal_info'],
         skills=experience_json['skills'],
         experience=experience_json['experience'],
+        # slightly temporary i believe
         education_section=experience_json['education'],
-        projects=experience_json['projects']
-    )
+        # This lambda is temporary, until I remember the more general structure for the input.
+        # reaaaaally should have made sure that I had documentation down for
+        # the JSON formatting before I went awol on this project.
+        projects=filter(lambda x: x['name'] not in ['MarkyMarkov'], experience_json['projects']
+                        ))
     return filled_template
 
 
@@ -114,13 +125,15 @@ def cli_wrapper():
         autoescape=False,
         loader=jinja2.FileSystemLoader(template_dir)
     )
-    parsed_json = filter_json(parse_json(args.json))
+    parsed_json = format_json(parse_json(args.json))
     jinja_template = latex_jinja_env.get_template(template)
     resume_tex = fill_template(parsed_json, jinja_template)
     if not args.output:
-        print(resume_tex)
+        print('no')
+        # print(resume_tex)
     else:
         print("not ready for this shit")
 
 
-cli_wrapper()
+if __name__ == "__main__":
+    cli_wrapper()
